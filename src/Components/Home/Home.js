@@ -9,12 +9,12 @@ const Home = () => {
   const navigate = useNavigate();
   const ColorButton = styled(Button)(({ theme }) => ({
   
-    backgroundColor: "#ff506d",
+    backgroundColor: "#df304d",
    
   }));
   const ColorButtonManager = styled(Button)(({ theme }) => ({
   
-    backgroundColor: "#28ced4",
+    backgroundColor: "#00848a",
    
   }));
   return (
@@ -23,10 +23,10 @@ const Home = () => {
       <img src={image} alt="Snow"/>
       <div className="homebtn">
         <div className="empbtn">
-        <ColorButton variant="contained" color='success' className="info" size="large" onClick={() => navigate("/employee")} >Employee</ColorButton>
+        <ColorButton variant="contained" color='success' className="info" size="large" onClick={() => navigate("/employee")}  role="button"  tabIndex={0}  aria-label="Navigate to Employee">Employee</ColorButton>
         </div>
         <div className="empbtn">
-        <ColorButtonManager variant="contained" color='success' size="large" onClick={() => navigate("/manager")}>Manager</ColorButtonManager>
+        <ColorButtonManager variant="contained" color='success' size="large" onClick={() => navigate("/manager")} role="button"  tabIndex={0}  aria-label="Navigate to Manager">Manager</ColorButtonManager>
         </div>
         
         

@@ -204,20 +204,20 @@ const Manager = () => {
   return (
 
     <div className="overall-layout">
-      <Snackbar anchorOrigin={{ vertical, horizontal }} open={toastOpen} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={toastOpen} autoHideDuration={6000} onClose={handleClose} role="alertdialog" aria-labelledby="approve-toast-message">
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           Approved {selectedRows.map(e => e.EmpName).toString()}
         </Alert>
       </Snackbar>
-      <Snackbar anchorOrigin={{ vertical, horizontal }} open={rejectoast} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={rejectoast} autoHideDuration={6000} onClose={handleClose} role="alertdialog" aria-labelledby="reject-toast-message">
         <Alert onClose={handleClose} severity="warning" sx={{ width: '100%' }}>
           Rejected {selectedRows.map(e => e.EmpName).toString()}
         </Alert>
       </Snackbar>
 
-      <div className="wrapper">
+      <div className="wrapper" role="group" aria-label="Time Sheet Actions">
         <div className="align-header">
-          <input type="text" value={selectedDates} disabled/>
+          <input type="text" value={selectedDates} disabled aria-label="Selected Dates" role='textbox'/>
           {/* <select disabled className="select" value={selectedDates}>
             <option value="">{selectedDates}</option>
           </select> */}
@@ -225,8 +225,8 @@ const Manager = () => {
         <div className="align-buttons">
           <div>
             <Stack direction="row" spacing={2}>
-              <Button variant="contained" disabled={disableButtons} color="success" onClick={apply}>Approve</Button>
-              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject}>Reject</Button>
+              <Button variant="contained" disabled={disableButtons} color="success" onClick={apply} role="button" aria-label="Approve">Approve</Button>
+              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject}  role="button" aria-label="Approve">Reject</Button>
             </Stack>
           </div>
           <div>
@@ -236,15 +236,15 @@ const Manager = () => {
       <div>
         <Box sx={{ height: 400, width: '100%' }}>
           <table class="table table-bordered text-center">
-            <thead className='table-secondary'>
-              <tr className='bg-primary'>
-                <th className='col-md-1'>Select</th>
-                <th className='col-md-2'>ProjectCode</th>
-                <th className='col-md-2'>JobCode</th>
-                <th className='col-md-2'>Emp name</th>
-                <th className='col-md-1'>Total</th>
-                <th className='col-md-1' >ViewDetails</th>
-                <th className='col-md-2' >Comments</th>
+            <thead className='table-secondary' role="rowgroup">
+              <tr className='bg-primary' role='row'>
+                <th className='col-md-1' aria-label='Select'>Select</th>
+                <th className='col-md-2' aria-label='ProjectCode'>ProjectCode</th>
+                <th className='col-md-2' aria-label='JobCode'>JobCode</th>
+                <th className='col-md-2' aria-label='EmployeeName'>Emp name</th>
+                <th className='col-md-1' aria-label='Total'>Total</th>
+                <th className='col-md-1' aria-label='ViewDetails'>ViewDetails</th>
+                <th className='col-md-2' aria-label='Comments'>Comments</th>
               </tr>
             </thead>
             <tbody id="table-body">
@@ -252,15 +252,15 @@ const Manager = () => {
                 return (
                   <tr>
                     <td className='col-md-1'>
-                      <Checkbox onChange={(e) => checkItems(e, row, index)} />
+                      <label onChange={(e) => checkItems(e, row, index)} aria-label={`Select ${row.name}`}/>
                     </td>
-                    <td className='col-md-2'>
+                    <td className='col-md-2' role="cell" tabIndex="0" aria-label={`Project Code: ${row.projectCode}`}>
                       {row.projectCode}
                     </td>
                     <td className='col-md-2'>
                       <div className="container">
                         <div className="row justify-content-md-center">
-                          <div className="col-md-12 input">
+                          <div className="col-md-12 input" role="cell" tabIndex="0" aria-label={`Job Code: ${row.jobCode}`}>
                             {row.jobCode}
                           </div>
                         </div>
@@ -269,18 +269,18 @@ const Manager = () => {
                     <td className='col-md-2'>
                       <div className="container">
                         <div className="row justify-content-md-center">
-                          <div className="col-md-12 input">
+                          <div className="col-md-12 input" role="cell" tabIndex="0" aria-label={`Employee Name: ${row.name}`}>
                             {row.name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className='col-md-1'>{row.total}</td>
+                    <td className='col-md-1' role="cell" tabIndex="0" aria-label={`Total: ${row.total}`}>{row.total}</td>
                     <td className='col-md-1'>
                       <div className="container">
                         <div className="row justify-content-md-center">
                           <div className="col-md-12 input">
-                            <Button onClick={(e) => detailView(row)}><RemoveRedEyeIcon /></Button>
+                            <Button onClick={(e) => detailView(row)} aria-label="View Details" role='button' tabIndex={0}><RemoveRedEyeIcon /></Button>
                           </div>
 
                         </div>
@@ -290,7 +290,7 @@ const Manager = () => {
                       <div className="container">
                         <div className="row justify-content-md-center">
                           <div className="col-md-12 input">
-                            <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(row, e)} />
+                            <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(row, e)} aria-label="Enter Comments" role="textbox" tabIndex={0}/>
                           </div>
                         </div>
                       </div>
@@ -298,7 +298,7 @@ const Manager = () => {
                   </tr>
                 )
               })
-                : <p className="noData">No Data</p>}
+                : <p className="noData" aria-label="No Data">No Data</p>}
             </tbody>
           </table>
         </Box>

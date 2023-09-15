@@ -12,6 +12,8 @@ function Item(props) {
   const { sx, ...other } = props;
   return (
     <Box
+    role="item"
+    aria-label="Item"
       sx={{
         bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101010' : '#fff'),
         color: (theme) => (theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800'),
@@ -72,7 +74,7 @@ export default function Employee(props) {
   return (
     <div className='time-sheet-box'>
       {/* <TimeSheet /> */}
-      <TimeSheetEntry empDetails={empDetails} name={window.location.pathname.split('/')[2]}/>
+      <TimeSheetEntry empDetails={empDetails} name={window.location.pathname.split('/')[2]} tabIndex={0} aria-label="Time Sheet Entry"/>
       
     </div>
   );
