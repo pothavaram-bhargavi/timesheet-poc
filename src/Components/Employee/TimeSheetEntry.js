@@ -69,6 +69,7 @@ const TimeSheetEntry = (props) => {
     }
     axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
       console.log('response:',response);
+      settoastOpen(true);
       setTimeout(() => naviagate("/manager"), 1000);
     }).catch(err => {
       console.log('err:',err);
@@ -89,6 +90,7 @@ const TimeSheetEntry = (props) => {
     }
     axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
       console.log('response:',response);
+      setrejectoast(true);
       setTimeout(() => naviagate("/manager"), 1000);
     }).catch(err => {
       console.log('err:',err);
@@ -363,10 +365,10 @@ const TimeSheetEntry = (props) => {
         // let oldData = localStorage.getItem('EmployeesData') ? JSON.parse(localStorage.getItem('EmployeesData')) : [];
         // oldData.push(empData);
         // localStorage.setItem('EmployeesData', JSON.stringify(oldData));
-        // handleClickOpen();
-        // setTimeout(() => {
-        //     handleClose();
-        // }, 2000);
+        handleClickOpen();
+        setTimeout(() => {
+            handleClose();
+        }, 2000);
 
 
 

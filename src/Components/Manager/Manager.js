@@ -252,7 +252,7 @@ const Manager = () => {
                 return (
                   <tr>
                     <td className='col-md-1'>
-                      <label onChange={(e) => checkItems(e, row, index)} aria-label={`Select ${row.name}`}/>
+                      <Checkbox onChange={(e) => checkItems(e, row, index)} aria-label={`Select ${row.name}`}/>
                     </td>
                     <td className='col-md-2' role="cell" tabIndex="0" aria-label={`Project Code: ${row.projectCode}`}>
                       {row.projectCode}
