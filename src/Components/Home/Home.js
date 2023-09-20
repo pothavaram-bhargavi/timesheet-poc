@@ -9,12 +9,12 @@ const Home = () => {
   const navigate = useNavigate();
   const ColorButton = styled(Button)(({ theme }) => ({
   
-    backgroundColor: "#df304d",
+    backgroundColor: "#ce3e5d",
    
   }));
   const ColorButtonManager = styled(Button)(({ theme }) => ({
   
-    backgroundColor: "#00848a",
+    backgroundColor: "#008484",
    
   }));
   return (

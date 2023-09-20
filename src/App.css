@@ -115,7 +115,7 @@
     background:#EEEEEE;
     border: 1px solid #c7c7c7;
     border-radius: 0.25rem;
-  background-color:#007bff;
+  background-color:#0070f4;
     width:150px;
     height:38px;
   margin-right: 40px;
@@ -199,7 +199,7 @@
     width: 210px;
   }
   .employee-name{
-    width:220px;
+    width:240px;
     height:38px;
     border: 1px solid #c7c7c7; 
     border-radius: 0.25rem;
@@ -225,4 +225,18 @@
     position: absolute;
   
     left: 45%;
+  }
+  .select-container {
+    position: relative;
+    display: inline-block;
+  }
+  .select-container .employee-name {
+    padding-right: 30px; 
+  }
+  .calendar-icon {
+    position: absolute;
+    top: 50%;
+    right: 14px; 
+    transform: translateY(-50%);
+    pointer-events: none; 
   }

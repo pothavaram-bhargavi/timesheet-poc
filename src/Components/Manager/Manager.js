@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import axios from 'axios';
-
+import DateRange from '../../mock-data/DateRange.json';
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -104,7 +104,34 @@ const Manager = () => {
   const [disableButtons, setdisableButtons] = React.useState(true);
   const [selectedDates, setselectedDates] = React.useState("");
   // const [timeSheetRows,setTimeSheetRows] = React.useState([]);
-
+  const [refresh,setRefresh]=useState(false);
+  const [dateRanges, setDateRanges] = useState(DateRange);
+  const [selectedDate, setselectedDate] = React.useState(null);
+  const role = localStorage.getItem("role") ?? 'employee';
+  // useEffect(() => {
+    
+  //   setDateRanges(DateRange);
+  //   setSelectedDates(DateRange[0].dates)
+  //   console.log("daterange", DateRange[0].dates);
+  // }, []);
+    
+  useEffect(()=>{
+    
+    if(refresh){
+      setSelectedRows([]);
+      setrowsData([]);
+      setdisableButtons(true);
+      axios.get('http://localhost:3001/getdata')
+      .then((response) => {
+        console.log(response.data)
+        setselectedDates(response.data[0]?.daterange);
+        setrowsData(response.data)
+        })
+        .catch((error) => {
+           console.log(error)
+        })
+    }
+  },[refresh]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -115,7 +142,18 @@ const Manager = () => {
   };
   const apply = () => {
 
-   
+    const selectedIds=selectedRows.map(ele=>ele?.id);
+    const data = {
+      id: selectedIds,
+      status: 'approve'
+    }
+    axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
+      console.log('response:',response);
+      setTimeout(() => {setRefresh(true)}, 1000);
+    }).catch(err => {
+      console.log('err:',err);
+    })
+  return;
     
 
 
@@ -132,14 +170,26 @@ const Manager = () => {
   }
 
   const reject = () => {
-    const arr1 = rowsData.map(e => e.id);
-    const arr2 = selectedRows.map(e => e.id);
-    let unique1 = arr1.filter((o) => arr2.indexOf(o) === -1);
-    let unique2 = arr2.filter((o) => arr1.indexOf(o) === -1);
-    const unique = unique1.concat(unique2);
-    let finalData = rowsData.filter((o) => unique.includes(o.id));
-    createEmployeeData(finalData);
-    setrowsData(finalData);
+    const selectedIds=selectedRows.map(ele=>ele?.id);
+    const data = {
+      id: selectedIds,
+      status: 'rejected'
+    }
+    axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
+      console.log('response:',response);
+      setTimeout(() => {setRefresh(true)}, 1000);
+    }).catch(err => {
+      console.log('err:',err);
+    })
+  return;
+    // const arr1 = rowsData.map(e => e.id);
+    // const arr2 = selectedRows.map(e => e.id);
+    // let unique1 = arr1.filter((o) => arr2.indexOf(o) === -1);
+    // let unique2 = arr2.filter((o) => arr1.indexOf(o) === -1);
+    // const unique = unique1.concat(unique2);
+    // let finalData = rowsData.filter((o) => unique.includes(o.id));
+    // createEmployeeData(finalData);
+    // setrowsData(finalData);
 
 
   }
@@ -199,8 +249,35 @@ const Manager = () => {
       setdisableButtons(((selectedRows.length > 0) ? false : true));
 
     }
-
+    
+   
   }
+  const handleDropdownChange = (event) => {
+    const selectedIndex = event.target.value;
+    // setSelectedRange(dateRanges[selectedIndex]);
+    // setSelectedDates(dateRanges[selectedIndex].dates);
+    const edata = dateRanges[selectedIndex].fromDate + '-' + dateRanges[selectedIndex].toDate;
+    console.log('data',edata);
+    // localStorage.setItem('dateRange', edata);
+    // const empName = localStorage.getItem('employeeName');
+    // let empData = localStorage.getItem(empName);
+    // localStorage.setItem('selectedDateRangeIndex', selectedIndex);
+    // empData = { [edata]: [] };
+    // localStorage.setItem(empName, JSON.stringify(empData));
+
+    // app call
+    const dateRange=edata;
+    axios.get(`http://localhost:3001/getdata?daterange=${dateRange}`)
+    .then((response) => {
+      console.log(response.data)
+      setselectedDates(response.data[0]?.daterange);
+      setrowsData(response.data)
+      })
+      .catch((error) => {
+         console.log(error)
+      })
+
+};
   return (
 
     <div className="overall-layout">
@@ -217,16 +294,34 @@ const Manager = () => {
 
       <div className="wrapper" role="group" aria-label="Time Sheet Actions">
         <div className="align-header">
-          <input type="text" value={selectedDates} disabled aria-label="Selected Dates" role='textbox'/>
-          {/* <select disabled className="select" value={selectedDates}>
+        <div className='col-md-7'>
+                        <select className='employee-name' value={selectedDate} onChange={handleDropdownChange} aria-label="Select Date Range" tabIndex={0}>
+                            {dateRanges.map((range, index) => (
+                                <option key={index} value={index}>
+                                    {range.fromDate} - {range.toDate}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+          {/* <input type="text" value={selectedDates} disabled aria-label="Selected Dates" role='textbox'/> */}
+          {/* <select  className="select" value={selectedDates}>
             <option value="">{selectedDates}</option>
           </select> */}
+          {/* <select className='employee-name' value={selectedDate} onChange={handleDropdownChange} aria-label="Select Date Range" tabIndex={0} >
+                                {dateRanges.map((range, index) => (
+                                    <option key={index} value={index}>
+                                        {range.fromDate} - {range.toDate}
+
+                                    </option>
+                                ))}
+
+                            </select> */}
         </div>
         <div className="align-buttons">
           <div>
             <Stack direction="row" spacing={2}>
-              <Button variant="contained" disabled={disableButtons} color="success" onClick={apply} role="button" aria-label="Approve">Approve</Button>
-              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject}  role="button" aria-label="Approve">Reject</Button>
+              <Button variant="contained" disabled={disableButtons} color="success" onClick={apply} role=" button" aria-label="Approve">Approve</Button>
+              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject}  role=" button" aria-label="Reject">Reject</Button>
             </Stack>
           </div>
           <div>
@@ -238,7 +333,7 @@ const Manager = () => {
           <table class="table table-bordered text-center">
             <thead className='table-secondary' role="rowgroup">
               <tr className='bg-primary' role='row'>
-                <th className='col-md-1' aria-label='Select'>Select</th>
+                <th className='col-md-1' aria-label='Select' scope='col'>Select</th>
                 <th className='col-md-2' aria-label='ProjectCode'>ProjectCode</th>
                 <th className='col-md-2' aria-label='JobCode'>JobCode</th>
                 <th className='col-md-2' aria-label='EmployeeName'>Emp name</th>
@@ -251,25 +346,27 @@ const Manager = () => {
               {rowsData && rowsData.length > 0 ? rowsData.map((row, index) => {
                 return (
                   <tr>
-                    <td className='col-md-1'>
-                      <Checkbox onChange={(e) => checkItems(e, row, index)} aria-label={`Select ${row.name}`}/>
+                     <td className='col-md-1' >
+                    
+                      <input type='checkbox' title='checkbox' onChange={(e) => checkItems(e, row, index)}  aria-label={`Select ${row.name}`} role="checkbox"/>
+                      
                     </td>
                     <td className='col-md-2' role="cell" tabIndex="0" aria-label={`Project Code: ${row.projectCode}`}>
                       {row.projectCode}
                     </td>
-                    <td className='col-md-2'>
+                    <td className='col-md-2' role='table'>
                       <div className="container">
                         <div className="row justify-content-md-center">
-                          <div className="col-md-12 input" role="cell" tabIndex="0" aria-label={`Job Code: ${row.jobCode}`}>
+                          <div className="col-md-12 input"  tabIndex="0" aria-label={`Job Code: ${row.jobCode}`}>
                             {row.jobCode}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className='col-md-2'>
+                    <td className='col-md-2' role='table'>
                       <div className="container">
                         <div className="row justify-content-md-center">
-                          <div className="col-md-12 input" role="cell" tabIndex="0" aria-label={`Employee Name: ${row.name}`}>
+                          <div className="col-md-12 input"  tabIndex="0" aria-label={`Employee Name: ${row.name}`}>
                             {row.name}
                           </div>
                         </div>

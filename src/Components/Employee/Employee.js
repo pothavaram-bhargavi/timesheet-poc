@@ -64,6 +64,7 @@ export default function Employee(props) {
        console.log(response.data)
        setempDetails(response.data)
        })
+    
        .catch((error) => {
           console.log(error)
        })

@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Grid } from '@mui/material';
-import DateRange from './DateRange.json';
+import DateRange from '../../mock-data/DateRange.json';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
