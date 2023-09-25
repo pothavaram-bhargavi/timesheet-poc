@@ -35,8 +35,8 @@ const TimeSheetEntry = (props) => {
     const [text, setText] = useState('');
     const [jobtext, setjobText] = useState('');
     const [timesheetExists, setTimesheetExists] = useState(false);
-    const [userHaveData, setUserHaveData] = useState(false);
-    const [userSelectedDateRange,setUserSelectedDateRange]=useState('');
+    const [userHaveData,setUserHaveData] = useState(false);
+
     // const [items, setItems] = useState([]);
 
 
@@ -59,6 +59,7 @@ const TimeSheetEntry = (props) => {
     var horizontal = "center";
     const [toastOpen, settoastOpen] = React.useState(false);
     const [rejectoast, setrejectoast] = React.useState(false);
+    const [existtoast,setExistToast] = useState(false);
     const [employees, setEmployees] = useState(
         ['Bhargavi',
             'Karthik',
@@ -66,6 +67,7 @@ const TimeSheetEntry = (props) => {
     const [employee, setEmployee] = useState('');
     const [selectedDateRange, setselectedDateRange] = useState("");
     const [timeSheetData, setTimeSheetData] = useState({});
+
     // Initialize timeSheetData with an empty object for the current date range
     useEffect(() => {
         const initialData = {};
@@ -103,8 +105,7 @@ const TimeSheetEntry = (props) => {
         axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
             console.log('response:', response);
             setrejectoast(true);
-            // setTimeout(() => naviagate("/manager"), 1000);
-            setTimeout(() => naviagate("/employee"), 1000);
+            setTimeout(() => naviagate("/manager"), 1000);
         }).catch(err => {
             console.log('err:', err);
         })
@@ -129,6 +130,7 @@ const TimeSheetEntry = (props) => {
 
         settoastOpen(false);
         setrejectoast(false);
+        setExistToast(false);
     };
     useEffect(() => {
         // setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
@@ -213,17 +215,27 @@ const TimeSheetEntry = (props) => {
         setEmployeeName(props.name);
     }, [props?.name]);
 
-    const handleEmployee = (event) => {
-       setEmployeeName(event.target.value);
-       const edata = userSelectedDateRange.length>0 ? userSelectedDateRange: (dateRanges[0].fromDate + '-' + dateRanges[0].toDate);
-        // localStorage.setItem('employeeName', empName);
-        // localStorage.setItem(empName, '');
-        axios.get(`http://localhost:3001/getEmpTimeSheetdata?daterange=${edata}&name=${event.target.value}`)
-        .then((response) => {
-            console.log('getdata response:', response.data)
-            if (response && response?.data.length > 0) {
+    // const handleEmployee = (empName) => {
+    //    setEmployeeName(empName);
+    //     localStorage.setItem('employeeName', empName);
+    //     localStorage.setItem(empName, '');
+    // }
+
+    const handleDropdownChange = (event) => {
+        const selectedIndex = event.target.value;
+        console.log('selectedIndex', selectedIndex);
+        setSelectedRange(dateRanges[selectedIndex]);
+        console.log('dateRanges', dateRanges[selectedIndex])
+        setSelectedDates(dateRanges[selectedIndex].dates);
+        console.log('dates', dateRanges[selectedIndex].dates)
+        const edata = dateRanges[selectedIndex].fromDate + '-' + dateRanges[selectedIndex].toDate;
+
+        axios.get(`http://localhost:3001/getEmpTimeSheetdata?daterange=${edata}&name=${employeeName}`)
+            .then((response) => {
+                console.log('getdata response:', response.data)
                 setTimeSheetRows(response.data);
-                setUserHaveData(true);
+             setUserHaveData(true);
+
                 const day1HoursArr = response.data.map(ele => ele?.day1);
                 let day1sum = day1HoursArr.reduce(function (accumulator, curValue) {
 
@@ -239,7 +251,7 @@ const TimeSheetEntry = (props) => {
 
                 }, 0)
                 setDay2Total(day2sum)
-
+               
                 const day3HoursArr = response.data.map(ele => ele?.day3);
                 let day3sum = day3HoursArr.reduce(function (accumulator, curValue) {
 
@@ -277,103 +289,7 @@ const TimeSheetEntry = (props) => {
 
                 }, 0)
                 setDay7Total(day7sum)
-            } else {
-                setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
-                setDay1Total(0);
-                setDay2Total(0);
-                setDay3Total(0);
-                setDay4Total(0);
-                setDay5Total(0);
-                setDay6Total(0);
-                setDay7Total(0);
-                setUserHaveData(false);
-            }
-        })
-        .catch((error) => {
-            console.log('error:', error)
-        })
-    }
 
-    const handleDropdownChange = (event) => {
-        const selectedIndex = event.target.value;
-        console.log('selectedIndex', selectedIndex);
-        console.log('date-range',dateRanges[selectedIndex]);
-        setSelectedRange(dateRanges[selectedIndex]);
-        console.log('dateRanges', dateRanges[selectedIndex])
-        setSelectedDates(dateRanges[selectedIndex].dates);
-        console.log('dates', dateRanges[selectedIndex].dates)
-        const edata = dateRanges[selectedIndex].fromDate + '-' + dateRanges[selectedIndex].toDate;
-        setUserSelectedDateRange(edata);
-        axios.get(`http://localhost:3001/getEmpTimeSheetdata?daterange=${edata}&name=${employeeName}`)
-            .then((response) => {
-                console.log('getdata response:', response.data)
-                if (response && response?.data.length > 0) {
-                    setTimeSheetRows(response.data);
-                    setUserHaveData(true);
-                    const day1HoursArr = response.data.map(ele => ele?.day1);
-                    let day1sum = day1HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay1Total(day1sum)
-
-                    const day2HoursArr = response.data.map(ele => ele?.day2);
-                    let day2sum = day2HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay2Total(day2sum)
-
-                    const day3HoursArr = response.data.map(ele => ele?.day3);
-                    let day3sum = day3HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay3Total(day3sum)
-                    const day4HoursArr = response.data.map(ele => ele?.day4);
-                    let day4sum = day4HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay4Total(day4sum)
-
-                    const day5HoursArr = response.data.map(ele => ele?.day5);
-                    let day5sum = day5HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay5Total(day5sum)
-                    const day6HoursArr = response.data.map(ele => ele?.day6);
-                    let day6sum = day6HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay6Total(day6sum)
-
-                    const day7HoursArr = response.data.map(ele => ele?.day7);
-                    let day7sum = day7HoursArr.reduce(function (accumulator, curValue) {
-
-                        return accumulator + curValue
-
-                    }, 0)
-                    setDay7Total(day7sum)
-                } else {
-                    setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
-                    setDay1Total(0);
-                    setDay2Total(0);
-                    setDay3Total(0);
-                    setDay4Total(0);
-                    setDay5Total(0);
-                    setDay6Total(0);
-                    setDay7Total(0);
-                    setUserHaveData(false);
-                }
             })
             .catch((error) => {
                 console.log('error:', error)
@@ -386,9 +302,8 @@ const TimeSheetEntry = (props) => {
         // localStorage.setItem(empName, JSON.stringify(empData));
         const dateRangeData = timeSheetData[employeeName];
         if (dateRangeData && dateRangeData[edata]) {
-            setTimesheetExists(true);
+            
             const rowsForSelectedRange = dateRangeData[edata];
-            console.log('rowsForSelectedRange:', rowsForSelectedRange);
             setTimeSheetRows(rowsForSelectedRange);
             // setEmployeeName(empName);
             setDay1Total(day1Total);
@@ -400,7 +315,7 @@ const TimeSheetEntry = (props) => {
             setDay7Total(day7Total);
 
         } else {
-            setTimesheetExists(false);
+            
             // No data found, initialize with empty rows
             setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }]);
             // setEmployeeName('');
@@ -605,68 +520,35 @@ const TimeSheetEntry = (props) => {
 
         }
         const totalrows = day1Total + day2Total + day3Total + day4Total + day5Total + day6Total + day7Total
-        const edata=userSelectedDateRange.length>0 ? userSelectedDateRange: (dateRanges[0].fromDate + '-' + dateRanges[0].toDate)
-        const data = { name: employeeName, daterange: edata, timesheetsRows: timeSheetRows, totalhours: totalrows }
+        const data = { name: employeeName, daterange: dateRange, timesheetsRows: timeSheetRows, totalhours: totalrows }
 
 
-        if (userHaveData) {
-            data.timesheetsRows = timeSheetRows.filter(ele => ele.status !== 'approve');
+         if(userHaveData){
+            data.timesheetsRows = timeSheetRows.filter(ele=> ele.status != 'approve');
             axios.put('http://localhost:3001/modifyUserTimeSheet', data, {
                 headers: headers
             })
                 .then((response) => {
                     console.log(response)
-                    setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }]);
-                    setDay1Total(0);
-                    setDay2Total(0);
-                    setDay3Total(0);
-                    setDay4Total(0);
-                    setDay5Total(0);
-                    setDay6Total(0);
-                    setDay7Total(0);
-                    setUserHaveData(false);
                 })
                 .catch((error) => {
                     console.log(error)
                 })
-        } else {
+         }else{
             axios.post('http://localhost:3001/addEmpTimeSheet', data, {
-                headers: headers
-            })
-                .then((response) => {
-                    console.log(response)
-                    setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }]);
-                    setDay1Total(0);
-                    setDay2Total(0);
-                    setDay3Total(0);
-                    setDay4Total(0);
-                    setDay5Total(0);
-                    setDay6Total(0);
-                    setDay7Total(0);
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
-
-    }
-
-    const reSubmitData = () => {
-        const data = { name: employeeName, daterange: userSelectedDateRange, timesheetsRows: timeSheetRows }
-        const headers = {
-            'Content-Type': 'application/json'
-        }
-        data.timesheetsRows = timeSheetRows.filter(ele => ele.status !== 'approve');
-        axios.put('http://localhost:3001/modifyUserTimeSheet', data, {
             headers: headers
-        }).then((response) => {
-            console.log(response)
-            naviagate("/manager")
         })
-        .catch((error) => {
-            console.log(error)
-        })
+            .then((response) => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+         }
+        
     }
+
+
     return (
         <>
             <Snackbar anchorOrigin={{ vertical, horizontal }} open={toastOpen} autoHideDuration={6000} onClose={handleToastClose} role="alertdialog" aria-labelledby="approve-toast-message">
@@ -684,10 +566,15 @@ const TimeSheetEntry = (props) => {
                     Timesheet Submitted Successfully
                 </Alert>
             </Snackbar>
+            <Snackbar anchorOrigin={{ vertical, horizontal }} open={open} autoHideDuration={6000} onClose={handleToastClose} role="alertdialog" aria-labelledby="timesheet submit-toast-message">
+                <Alert onClose={handleToastClose} severity="info" sx={{ width: '100%' }}>
+                    Timesheet is already existed
+                </Alert>
+            </Snackbar>
             <div class="container mt-4">
                 <div class="employee-select">
                     {window.location.href.includes("manager") || window.location.href.includes("details") && <input type='text' value={employeeName} disabled aria-label="Employee Name" />}
-                    {window.location.href.includes("employee") && <select className={window.location.href.includes("employee") || window.location.href.includes("details") ? 'employee-name' : 'employee-name disabled'} value={employeeName} onChange={handleEmployee} aria-label="Employee Name" tabIndex={0} role='presentation'>
+                    {window.location.href.includes("employee") && <select className={window.location.href.includes("employee") || window.location.href.includes("details") ? 'employee-name' : 'employee-name disabled'} value={employeeName} onChange={(event) => setEmployeeName(event.target.value)} aria-label="Employee Name" tabIndex={0} role='presentation'>
                         <option>Employee Name</option>
                         <option>Bhargavi</option>
                         <option>Karthik</option>
@@ -721,15 +608,11 @@ const TimeSheetEntry = (props) => {
                                 </option>
                             ))}
                         </select> */}
-                        {timesheetExists && (
-                            <div className="timesheet-exists-message">
-                                Timesheet already exists for the selected date range.
-                            </div>
-                        )}
+                        
 
                     </div>
-                    {window.location.href.includes("employee")  && <button class="btn btn-primary" onClick={submitData} disabled={!(employeeName && timeSheetRows && timeSheetRows[0].projectCode.length > 0 && timeSheetRows[0].jobCode.length > 0) ? 'true' : ''} className='timesheet-button' aria-label="Submit Timesheet" role='button'>Submit</button>}
-                    {window.location.href.includes("manager") || (window.location.href.includes("details")) && <Stack direction="row" spacing={2}>
+                    {window.location.href.includes("employee") && <button class="btn btn-primary" onClick={submitData} disabled={!(employeeName && timeSheetRows && timeSheetRows[0].projectCode.length > 0 && timeSheetRows[0].jobCode.length > 0) ? 'true' : ''} className='timesheet-button' aria-label="Submit Timesheet" role='button'>Submit</button>}
+                    {window.location.href.includes("manager") || window.location.href.includes("details") && <Stack direction="row" spacing={2}>
                         <Button variant="contained" color="success" onClick={(e) => BacktoManagerApprove()} aria-label="Approve Timesheet" role='button' tabIndex={0}>Approve</Button>
                         <Button variant="contained" color="error" onClick={(e) => BacktoManagerRejected()} aria-label="Reject Timesheet" role='button' tabIndex={0}>Reject</Button>
                     </Stack>}
@@ -755,7 +638,7 @@ const TimeSheetEntry = (props) => {
                                         <div className="container">
                                             <div className="row justify-content-md-center">
                                                 <div className="col-md-12 input">
-                                                    {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input type="text" disabled value={row.projectCode} role="textbox" aria-label={`Project Code for Row ${index + 1}`} />}
+                                                    {window.location.href.includes("manager") || window.location.href.includes("details") && <input type="text" disabled value={row.projectCode} role="textbox" aria-label={`Project Code for Row ${index + 1}`} />}
                                                     {window.location.href.includes("employee") &&
                                                         <Select
                                                             defaultValue={currentpojectCode}
@@ -777,8 +660,8 @@ const TimeSheetEntry = (props) => {
                                         <div className="container">
                                             <div className="row justify-content-md-center">
                                                 <div className="col-md-12 input">
-                                                    {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input typ="text" value={row.jobCode} disabled style={{ height: "35px" }} role="textbox" aria-label={`Job Code for Row ${index + 1}`} />}
-                                                    {window.location.href.includes("employee")   && 
+                                                    {window.location.href.includes("manager") || window.location.href.includes("details") && <input typ="text" value={row.jobCode} disabled style={{ height: "35px" }} role="textbox" aria-label={`Job Code for Row ${index + 1}`} />}
+                                                    {window.location.href.includes("employee") &&
                                                         <Select
                                                             defaultValue={currentjobCode}
                                                             value={{ value: row.jobCode, label: row.jobCode }}
@@ -796,13 +679,13 @@ const TimeSheetEntry = (props) => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day1} onChange={(event) => changeTimeSheetData('day1', index, Math.min(event.target.value, 16))} aria-label={`Day 1 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day2} onChange={(event) => changeTimeSheetData('day2', index, Math.min(event.target.value, 16))} aria-label={`Day 2 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day3} onChange={(event) => changeTimeSheetData('day3', index, Math.min(event.target.value, 16))} aria-label={`Day 3 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day4} onChange={(event) => changeTimeSheetData('day4', index, Math.min(event.target.value, 16))} aria-label={`Day 4 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day5} onChange={(event) => changeTimeSheetData('day5', index, Math.min(event.target.value, 16))} aria-label={`Day 5 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day6} onChange={(event) => changeTimeSheetData('day6', index, Math.min(event.target.value, 16))} aria-label={`Day 6 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || (window.location.href.includes("details"))} className="form-control text-center" value={row.day7} onChange={(event) => changeTimeSheetData('day7', index, Math.min(event.target.value, 16))} aria-label={`Day 7 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={row.status === 'approve' || window.location.href.includes("details")} className="form-control text-center" value={row.day1} onChange={(event) => changeTimeSheetData('day1', index, Math.min(event.target.value, 16))} aria-label={`Day 1 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day2} onChange={(event) => changeTimeSheetData('day2', index, Math.min(event.target.value, 16))} aria-label={`Day 2 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day3} onChange={(event) => changeTimeSheetData('day3', index, Math.min(event.target.value, 16))} aria-label={`Day 3 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day4} onChange={(event) => changeTimeSheetData('day4', index, Math.min(event.target.value, 16))} aria-label={`Day 4 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day5} onChange={(event) => changeTimeSheetData('day5', index, Math.min(event.target.value, 16))} aria-label={`Day 5 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day6} onChange={(event) => changeTimeSheetData('day6', index, Math.min(event.target.value, 16))} aria-label={`Day 6 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={window.location.href.includes("details")} className="form-control text-center" value={row.day7} onChange={(event) => changeTimeSheetData('day7', index, Math.min(event.target.value, 16))} aria-label={`Day 7 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
 
                                     {window.location.href.includes("employee") &&
                                         <td className="col-md-auto">
@@ -818,7 +701,7 @@ const TimeSheetEntry = (props) => {
                             )
                         })}
                         <tr>
-                            <td className='col-md-2'>{(window.location.href.includes("employee") && userHaveData === false) && <button class="btn btn-secondary" id="add-row" onClick={addTableRow} style={{ height: '40px', width: '150px' }} role="button" tabindex="0" aria-label="Add Row">Add Row</button>}</td>
+                            <td className='col-md-2'>{(window.location.href.includes("employee") && userHaveData) && <button class="btn btn-secondary" id="add-row" onClick={addTableRow} style={{ height: '40px', width: '150px' }} role="button" tabindex="0" aria-label="Add Row">Add Row</button>}</td>
                             <td className='col-md-2'></td>
                             <td className='col-md-1 text-center' aria-label="Total for the day1"><p>{day1Total}</p></td>
                             <td className='col-md-1 text-center' aria-label="Total for the day2"><p>{day2Total}</p></td>
@@ -830,7 +713,7 @@ const TimeSheetEntry = (props) => {
                             {window.location.href.includes("employee") && <td className='col-md-1'></td>}
                             <td className='col-md-1' aria-label="Total for the week"><p>{day1Total + day2Total + day3Total + day4Total + day5Total + day6Total + day7Total}</p></td>
                         </tr>
-                        <td> {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input type="text" value={comments} onChange={handleCommentsChange} placeholder='comments' style={{ marginTop: '20px', width: '400%', height: '50px', border: '1px solid #D6EAF8' }} aria-label="Comments" tabIndex={0} />}</td>
+                        <td> {window.location.href.includes("manager") || window.location.href.includes("details") && <input type="text" value={comments} onChange={handleCommentsChange} placeholder='comments' style={{ marginTop: '20px', width: '400%', height: '50px', border: '1px solid #D6EAF8' }} aria-label="Comments" tabIndex={0} />}</td>
                     </tbody>
                 </table>
 

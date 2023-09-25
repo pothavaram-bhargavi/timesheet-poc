@@ -90,11 +90,11 @@ const Manager = () => {
       }
     },
   ];
-  const navigate = useNavigate();
+  const naviagate = useNavigate();
   const detailView = (param) => {
     localStorage.setItem("details", param.id);
 
-    navigate(`/details/${param.name}/${param.id}`);
+    naviagate(`/details/${param.name}/${param.id}`);
 
   }
   const [selectedRows, setSelectedRows] = React.useState([]);
@@ -104,36 +104,34 @@ const Manager = () => {
   const [disableButtons, setdisableButtons] = React.useState(true);
   const [selectedDates, setselectedDates] = React.useState("");
   // const [timeSheetRows,setTimeSheetRows] = React.useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh,setRefresh]=useState(false);
   const [dateRanges, setDateRanges] = useState(DateRange);
   const [selectedDate, setselectedDate] = React.useState(null);
   const role = localStorage.getItem("role") ?? 'employee';
-  const [userSelectedDateRange, setUserSelectedDateRange] = useState(dateRanges[0].fromDate + '-' + dateRanges[0].toDate);
   // useEffect(() => {
-
+    
   //   setDateRanges(DateRange);
   //   setSelectedDates(DateRange[0].dates)
   //   console.log("daterange", DateRange[0].dates);
   // }, []);
-
-  useEffect(() => {
-
-    if (refresh) {
+    
+  useEffect(()=>{
+    
+    if(refresh){
       setSelectedRows([]);
       setrowsData([]);
       setdisableButtons(true);
       axios.get('http://localhost:3001/getdata')
-        .then((response) => {
-          console.log(response.data)
-          setselectedDates(response.data[0]?.daterange);
-          setrowsData(response.data)
-          setRefresh(false);
+      .then((response) => {
+        console.log(response.data)
+        setselectedDates(response.data[0]?.daterange);
+        setrowsData(response.data)
         })
         .catch((error) => {
-          console.log(error)
+           console.log(error)
         })
     }
-  }, [refresh]);
+  },[refresh]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -144,20 +142,20 @@ const Manager = () => {
   };
   const apply = () => {
 
-    const selectedIds = selectedRows.map(ele => ele?.id);
+    const selectedIds=selectedRows.map(ele=>ele?.id);
     const data = {
       id: selectedIds,
       status: 'approve'
     }
     axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
-      console.log('response:', response);
+      console.log('response:',response);
       settoastOpen(true);
-      setTimeout(() => { setRefresh(true) }, 1000);
+      setTimeout(() => {setRefresh(true)}, 1000);
     }).catch(err => {
-      console.log('err:', err);
+      console.log('err:',err);
     })
-    return;
-
+  return;
+    
 
 
     // const arr1 = rowsData.map(e => e.id);
@@ -173,20 +171,19 @@ const Manager = () => {
   }
 
   const reject = () => {
-    const selectedIds = selectedRows.map(ele => ele?.id);
+    const selectedIds=selectedRows.map(ele=>ele?.id);
     const data = {
       id: selectedIds,
       status: 'rejected'
     }
     axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
-      console.log('response:', response);
+      console.log('response:',response);
       setrejectoast(true);
-      // setTimeout(() => { setRefresh(true) }, 1000);
-      setTimeout(() => { navigate('/employee') }, 1000);
+      setTimeout(() => {setRefresh(true)}, 1000);
     }).catch(err => {
-      console.log('err:', err);
+      console.log('err:',err);
     })
-    return;
+  return;
     // const arr1 = rowsData.map(e => e.id);
     // const arr2 = selectedRows.map(e => e.id);
     // let unique1 = arr1.filter((o) => arr2.indexOf(o) === -1);
@@ -200,9 +197,6 @@ const Manager = () => {
   }
   var vertical = "top";
   var horizontal = "center";
-  useEffect(()=>{
-    setUserSelectedDateRange(dateRanges[0].fromDate + '-' + dateRanges[0].toDate);
-  },[dateRanges]);
   useEffect(() => {
 
     // const data = JSON.parse(localStorage.getItem('EmployeesData'));
@@ -223,16 +217,16 @@ const Manager = () => {
 
     // })
 
-    axios.get(`http://localhost:3001/getdata?daterange=${userSelectedDateRange}`)
-      .then((response) => {
-        console.log(response.data)
-        setselectedDates(response.data[0]?.daterange);
-        setrowsData(response.data)
+    axios.get('http://localhost:3001/getdata')
+    .then((response) => {
+      console.log(response.data)
+      setselectedDates(response.data[0]?.daterange);
+      setrowsData(response.data)
       })
       .catch((error) => {
-        console.log(error)
+         console.log(error)
       })
-  }, [userSelectedDateRange]);
+  }, []);
   const createEmployeeData = (data) => {
     const empName = localStorage.getItem('employeeName');
     console.log(empName);
@@ -257,15 +251,15 @@ const Manager = () => {
       setdisableButtons(((selectedRows.length > 0) ? false : true));
 
     }
-
-
+    
+   
   }
   const handleDropdownChange = (event) => {
     const selectedIndex = event.target.value;
     // setSelectedRange(dateRanges[selectedIndex]);
     // setSelectedDates(dateRanges[selectedIndex].dates);
     const edata = dateRanges[selectedIndex].fromDate + '-' + dateRanges[selectedIndex].toDate;
-    console.log('data', edata);
+    console.log('data',edata);
     // localStorage.setItem('dateRange', edata);
     // const empName = localStorage.getItem('employeeName');
     // let empData = localStorage.getItem(empName);
@@ -274,18 +268,18 @@ const Manager = () => {
     // localStorage.setItem(empName, JSON.stringify(empData));
 
     // app call
-    const dateRange = edata;
+    const dateRange=edata;
     axios.get(`http://localhost:3001/getdata?daterange=${dateRange}`)
-      .then((response) => {
-        console.log(response.data)
-        setselectedDates(response.data[0]?.daterange);
-        setrowsData(response.data)
+    .then((response) => {
+      console.log(response.data)
+      setselectedDates(response.data[0]?.daterange);
+      setrowsData(response.data)
       })
       .catch((error) => {
-        console.log(error)
+         console.log(error)
       })
 
-  };
+};
   return (
 
     <div className="overall-layout">
@@ -302,15 +296,15 @@ const Manager = () => {
 
       <div className="wrapper" role="group" aria-label="Time Sheet Actions">
         <div className="align-header">
-          <div className='col-md-7'>
-            <select className='employee-name-1' value={selectedDate} onChange={handleDropdownChange} aria-label="Select Date Range" tabIndex={0}>
-              {dateRanges.map((range, index) => (
-                <option key={index} value={index}>
-                  {range.fromDate} - {range.toDate}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className='col-md-7'>
+                        <select className='employee-name-1' value={selectedDate} onChange={handleDropdownChange} aria-label="Select Date Range" tabIndex={0}>
+                            {dateRanges.map((range, index) => (
+                                <option key={index} value={index}>
+                                    {range.fromDate} - {range.toDate}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
           {/* <input type="text" value={selectedDates} disabled aria-label="Selected Dates" role='textbox'/> */}
           {/* <select  className="select" value={selectedDates}>
             <option value="">{selectedDates}</option>
@@ -329,7 +323,7 @@ const Manager = () => {
           <div>
             <Stack direction="row" spacing={2}>
               <Button variant="contained" disabled={disableButtons} color="success" onClick={apply} role=" button" aria-label="Approve">Approve</Button>
-              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject} role=" button" aria-label="Reject">Reject</Button>
+              <Button variant="contained" disabled={disableButtons} color="error" onClick={reject}  role=" button" aria-label="Reject">Reject</Button>
             </Stack>
           </div>
           <div>
@@ -354,10 +348,10 @@ const Manager = () => {
               {rowsData && rowsData.length > 0 ? rowsData.map((row, index) => {
                 return (
                   <tr>
-                    <td className='col-md-1' >
-
-                      <label><input type='checkbox' title='checkbox' onChange={(e) => checkItems(e, row, index)} aria-label={`Select ${row.name}`} role="checkbox" /></label>
-
+                     <td className='col-md-1' >
+                    
+                      <label><input type='checkbox' title='checkbox' onChange={(e) => checkItems(e, row, index)}  aria-label={`Select ${row.name}`} role="checkbox"/></label>
+                      
                     </td>
                     <td className='col-md-2' role="cell" tabIndex="0" aria-label={`Project Code: ${row.projectCode}`}>
                       {row.projectCode}
@@ -365,7 +359,7 @@ const Manager = () => {
                     <td className='col-md-2' role='cell'>
                       <div className="container">
                         <div className="row justify-content-md-center" >
-                          <div className="col-md-12 input" tabIndex="0" aria-label={`Job Code: ${row.jobCode}`} role='contentinfo'>
+                          <div className="col-md-12 input"  tabIndex="0" aria-label={`Job Code: ${row.jobCode}`} role='contentinfo'>
                             {row.jobCode}
                           </div>
                         </div>
@@ -374,7 +368,7 @@ const Manager = () => {
                     <td className='col-md-2' role='cell'>
                       <div className="container">
                         <div className="row justify-content-md-center">
-                          <div className="col-md-12 input" tabIndex="0" aria-label={`Employee Name: ${row.name}`} role='contentinfo'>
+                          <div className="col-md-12 input"  tabIndex="0" aria-label={`Employee Name: ${row.name}`} role='contentinfo'>
                             {row.name}
                           </div>
                         </div>
@@ -395,7 +389,7 @@ const Manager = () => {
                       <div className="container">
                         <div className="row justify-content-md-center">
                           <div className="col-md-12 input">
-                            <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(row, e)} aria-label="Enter Comments" role="textbox" tabIndex={0} />
+                            <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(row, e)} aria-label="Enter Comments" role="textbox" tabIndex={0}/>
                           </div>
                         </div>
                       </div>
