@@ -27,6 +27,7 @@ const TimeSheetEntry = (props) => {
     const [selectedRange, setSelectedRange] = useState(null);
     const [selectedDate, setselectedDate] = React.useState(null);
     const [comments, setComments] = useState('');
+    const [charCount, setCharCount] = useState(0);
     const [open, setOpen] = React.useState(false);
     const [currentpojectCode, setcurrentpojectCode] = React.useState(null);
     const [currentjobCode, setcurrentjobCode] = React.useState(null);
@@ -36,7 +37,7 @@ const TimeSheetEntry = (props) => {
     const [jobtext, setjobText] = useState('');
     const [timesheetExists, setTimesheetExists] = useState(false);
     const [userHaveData, setUserHaveData] = useState(false);
-    const [userSelectedDateRange,setUserSelectedDateRange]=useState('');
+    const [userSelectedDateRange, setUserSelectedDateRange] = useState('');
     // const [items, setItems] = useState([]);
 
 
@@ -204,6 +205,10 @@ const TimeSheetEntry = (props) => {
             setDay6Total(parseInt(props.empDetails['day6']));
             setDay7Total(parseInt(props.empDetails['day7']));
             setselectedDateRange(props.empDetails.daterange);
+            const date=props.empDetails.daterange.substring(0,10)
+            const filteredData=DateRange.find(ele=>ele.fromDate===date);
+            console.log('emp dates',filteredData);
+            setSelectedDates(filteredData?.dates)
         } else {
             setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
         }
@@ -214,90 +219,90 @@ const TimeSheetEntry = (props) => {
     }, [props?.name]);
 
     const handleEmployee = (event) => {
-       setEmployeeName(event.target.value);
-       const edata = userSelectedDateRange.length>0 ? userSelectedDateRange: (dateRanges[0].fromDate + '-' + dateRanges[0].toDate);
+        setEmployeeName(event.target.value);
+        const edata = userSelectedDateRange.length > 0 ? userSelectedDateRange : (dateRanges[0].fromDate + '-' + dateRanges[0].toDate);
         // localStorage.setItem('employeeName', empName);
         // localStorage.setItem(empName, '');
         axios.get(`http://localhost:3001/getEmpTimeSheetdata?daterange=${edata}&name=${event.target.value}`)
-        .then((response) => {
-            console.log('getdata response:', response.data)
-            if (response && response?.data.length > 0) {
-                setTimeSheetRows(response.data);
-                setUserHaveData(true);
-                const day1HoursArr = response.data.map(ele => ele?.day1);
-                let day1sum = day1HoursArr.reduce(function (accumulator, curValue) {
+            .then((response) => {
+                console.log('getdata response:', response.data)
+                if (response && response?.data.length > 0) {
+                    setTimeSheetRows(response.data);
+                    setUserHaveData(true);
+                    const day1HoursArr = response.data.map(ele => ele?.day1);
+                    let day1sum = day1HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay1Total(day1sum)
+                    }, 0)
+                    setDay1Total(day1sum)
 
-                const day2HoursArr = response.data.map(ele => ele?.day2);
-                let day2sum = day2HoursArr.reduce(function (accumulator, curValue) {
+                    const day2HoursArr = response.data.map(ele => ele?.day2);
+                    let day2sum = day2HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay2Total(day2sum)
+                    }, 0)
+                    setDay2Total(day2sum)
 
-                const day3HoursArr = response.data.map(ele => ele?.day3);
-                let day3sum = day3HoursArr.reduce(function (accumulator, curValue) {
+                    const day3HoursArr = response.data.map(ele => ele?.day3);
+                    let day3sum = day3HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay3Total(day3sum)
-                const day4HoursArr = response.data.map(ele => ele?.day4);
-                let day4sum = day4HoursArr.reduce(function (accumulator, curValue) {
+                    }, 0)
+                    setDay3Total(day3sum)
+                    const day4HoursArr = response.data.map(ele => ele?.day4);
+                    let day4sum = day4HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay4Total(day4sum)
+                    }, 0)
+                    setDay4Total(day4sum)
 
-                const day5HoursArr = response.data.map(ele => ele?.day5);
-                let day5sum = day5HoursArr.reduce(function (accumulator, curValue) {
+                    const day5HoursArr = response.data.map(ele => ele?.day5);
+                    let day5sum = day5HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay5Total(day5sum)
-                const day6HoursArr = response.data.map(ele => ele?.day6);
-                let day6sum = day6HoursArr.reduce(function (accumulator, curValue) {
+                    }, 0)
+                    setDay5Total(day5sum)
+                    const day6HoursArr = response.data.map(ele => ele?.day6);
+                    let day6sum = day6HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay6Total(day6sum)
+                    }, 0)
+                    setDay6Total(day6sum)
 
-                const day7HoursArr = response.data.map(ele => ele?.day7);
-                let day7sum = day7HoursArr.reduce(function (accumulator, curValue) {
+                    const day7HoursArr = response.data.map(ele => ele?.day7);
+                    let day7sum = day7HoursArr.reduce(function (accumulator, curValue) {
 
-                    return accumulator + curValue
+                        return accumulator + curValue
 
-                }, 0)
-                setDay7Total(day7sum)
-            } else {
-                setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
-                setDay1Total(0);
-                setDay2Total(0);
-                setDay3Total(0);
-                setDay4Total(0);
-                setDay5Total(0);
-                setDay6Total(0);
-                setDay7Total(0);
-                setUserHaveData(false);
-            }
-        })
-        .catch((error) => {
-            console.log('error:', error)
-        })
+                    }, 0)
+                    setDay7Total(day7sum)
+                } else {
+                    setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
+                    setDay1Total(0);
+                    setDay2Total(0);
+                    setDay3Total(0);
+                    setDay4Total(0);
+                    setDay5Total(0);
+                    setDay6Total(0);
+                    setDay7Total(0);
+                    setUserHaveData(false);
+                }
+            })
+            .catch((error) => {
+                console.log('error:', error)
+            })
     }
 
     const handleDropdownChange = (event) => {
         const selectedIndex = event.target.value;
         console.log('selectedIndex', selectedIndex);
-        console.log('date-range',dateRanges[selectedIndex]);
+        console.log('date-range', dateRanges[selectedIndex]);
         setSelectedRange(dateRanges[selectedIndex]);
         console.log('dateRanges', dateRanges[selectedIndex])
         setSelectedDates(dateRanges[selectedIndex].dates);
@@ -364,7 +369,7 @@ const TimeSheetEntry = (props) => {
                     }, 0)
                     setDay7Total(day7sum)
                 } else {
-                    
+
                     setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }])
                     setDay1Total(0);
                     setDay2Total(0);
@@ -451,23 +456,24 @@ const TimeSheetEntry = (props) => {
     }
     const handleProjectCode = (code, i, data) => {
         console.log('code', code, 'i', i, 'data', data);
-        if (code === "projectCode") {
-            setcurrentpojectCode(data);
-        }
-        if (code === "jobCode") {
-            setcurrentjobCode(data);
-        }
+        // if (code === "projectCode") {
+        //     setcurrentpojectCode(data);
+        // }
+        // if (code === "jobCode") {
+        //     setcurrentjobCode(data);
+        // }
 
-        timeSheetRows.map((obj, index) => {
+        const Data = timeSheetRows.map((obj, index) => {
             if (index === i) {
                 obj[code] = data.value
                 return obj;
 
             }
-
+            return obj;
         }
 
         );
+        setTimeSheetRows(Data);
 
     }
     const changeTimeSheetData = async (key, index, value) => {
@@ -558,37 +564,41 @@ const TimeSheetEntry = (props) => {
     }
     const handleCommentsChange = (e) => {
         const inputValue = e.target.value;
+        const cleanedComment = inputValue.replace(/[^A-Za-z]/g, '');
         if (inputValue.length <= 250) {
-            setComments(inputValue);
-        } else {
+            setComments(cleanedComment);
+            setCharCount(cleanedComment.length);
+        }
+        else {
 
             setComments(inputValue.slice(0, 250));
+            setCharCount(250); 
         }
     }
 
-    const enableInput=(row)=>{
-        if(window.location.href.includes("details")){           
+    const enableInput = (row) => {
+        if (window.location.href.includes("details")) {
             return true;
-        }else{            
-            if(row && row.id){              
-                return row.status === 'rejected' ? false :true;
+        } else {
+            if (row && row.id) {
+                return row.status === 'rejected' ? false : true;
             }
             return false;
         }
     }
-    const enableSubmitBtn=()=>{
-        if(userHaveData){
-            if(!(employeeName && timeSheetRows)){
-              return true;
-            }else{
-                console.log('enableSubmitBtn timeSheetRows:',timeSheetRows);
-                const isHave=timeSheetRows.find(ele=>ele.status==='rejected');
-                console.log('isHave',isHave);
-                console.log('object',isHave?.status.length>0 ? false:true);
-                return isHave?.status.length>0 ? false:true;
+    const enableSubmitBtn = () => {
+        if (userHaveData) {
+            if (!(employeeName && timeSheetRows)) {
+                return true;
+            } else {
+                console.log('enableSubmitBtn timeSheetRows:', timeSheetRows);
+                const isHave = timeSheetRows.find(ele => ele.status === 'rejected');
+                console.log('isHave', isHave);
+                console.log('object', isHave?.status.length > 0 ? false : true);
+                return isHave?.status.length > 0 ? false : true;
             }
-        }else{
-            if(!(employeeName && timeSheetRows && timeSheetRows[0].projectCode.length > 0 && timeSheetRows[0].jobCode.length > 0)){
+        } else {
+            if (!(employeeName && timeSheetRows && timeSheetRows[0].projectCode.length > 0 && timeSheetRows[0].jobCode.length > 0)) {
                 return true;
             }
             return false;
@@ -635,7 +645,7 @@ const TimeSheetEntry = (props) => {
 
         }
         const totalrows = day1Total + day2Total + day3Total + day4Total + day5Total + day6Total + day7Total
-        const edata=userSelectedDateRange.length>0 ? userSelectedDateRange: (dateRanges[0].fromDate + '-' + dateRanges[0].toDate)
+        const edata = userSelectedDateRange.length > 0 ? userSelectedDateRange : (dateRanges[0].fromDate + '-' + dateRanges[0].toDate)
         const data = { name: employeeName, daterange: edata, timesheetsRows: timeSheetRows, totalhours: totalrows }
 
 
@@ -647,7 +657,6 @@ const TimeSheetEntry = (props) => {
                 .then((response) => {
                     console.log(response)
                     setEmployeeName('');
-                    setEmployeeName('');
                     setSelectedRange(dateRanges[0]);
                     console.log('dateRanges', dateRanges[0])
                     setSelectedDates(dateRanges[0].dates);
@@ -655,7 +664,7 @@ const TimeSheetEntry = (props) => {
                     const edata = dateRanges[0].fromDate + '-' + dateRanges[0].toDate;
                     setUserSelectedDateRange(edata);
                     setselectedDate(edata);
-                   
+
                     setTimeSheetRows([{ projectCode: '', jobCode: '', day1: 0, day2: 0, day3: 0, day4: 0, day5: 0, day6: 0, day7: 0, total: 0 }]);
                     setDay1Total(0);
                     setDay2Total(0);
@@ -675,7 +684,6 @@ const TimeSheetEntry = (props) => {
             })
                 .then((response) => {
                     console.log(response)
-                    setEmployeeName('');
                     setEmployeeName('');
                     setSelectedRange(dateRanges[0]);
                     console.log('dateRanges', dateRanges[0])
@@ -712,9 +720,9 @@ const TimeSheetEntry = (props) => {
             console.log(response)
             naviagate("/manager")
         })
-        .catch((error) => {
-            console.log(error)
-        })
+            .catch((error) => {
+                console.log(error)
+            })
     }
     return (
         <>
@@ -777,7 +785,7 @@ const TimeSheetEntry = (props) => {
                         )}
 
                     </div>
-                    {window.location.href.includes("employee")  && <button class="btn btn-primary" onClick={submitData} disabled={enableSubmitBtn()? 'true' : ''} className='timesheet-button' aria-label="Submit Timesheet" role='button'>Submit</button>}
+                    {window.location.href.includes("employee") && <button class="btn btn-primary" onClick={submitData} disabled={enableSubmitBtn() ? 'true' : ''} className='timesheet-button' aria-label="Submit Timesheet" role='button'>Submit</button>}
                     {window.location.href.includes("manager") || (window.location.href.includes("details")) && <Stack direction="row" spacing={2}>
                         <Button variant="contained" color="success" onClick={(e) => BacktoManagerApprove()} aria-label="Approve Timesheet" role='button' tabIndex={0}>Approve</Button>
                         <Button variant="contained" color="error" onClick={(e) => BacktoManagerRejected()} aria-label="Reject Timesheet" role='button' tabIndex={0}>Reject</Button>
@@ -827,7 +835,7 @@ const TimeSheetEntry = (props) => {
                                             <div className="row justify-content-md-center">
                                                 <div className="col-md-12 input">
                                                     {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input typ="text" value={row.jobCode} disabled style={{ height: "35px" }} role="textbox" aria-label={`Job Code for Row ${index + 1}`} />}
-                                                    {window.location.href.includes("employee")   && 
+                                                    {window.location.href.includes("employee") &&
                                                         <Select
                                                             defaultValue={currentjobCode}
                                                             value={{ value: row.jobCode, label: row.jobCode }}
@@ -845,21 +853,21 @@ const TimeSheetEntry = (props) => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day1} onChange={(event) => changeTimeSheetData('day1', index, Math.min(event.target.value, 16))} aria-label={`Day 1 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day2} onChange={(event) => changeTimeSheetData('day2', index, Math.min(event.target.value, 16))} aria-label={`Day 2 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day3} onChange={(event) => changeTimeSheetData('day3', index, Math.min(event.target.value, 16))} aria-label={`Day 3 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day4} onChange={(event) => changeTimeSheetData('day4', index, Math.min(event.target.value, 16))} aria-label={`Day 4 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day5} onChange={(event) => changeTimeSheetData('day5', index, Math.min(event.target.value, 16))} aria-label={`Day 5 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day6} onChange={(event) => changeTimeSheetData('day6', index, Math.min(event.target.value, 16))} aria-label={`Day 6 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
-                                    <td className="col-md-1"><input type="text" disabled={enableInput(row)? true:false} className="form-control text-center" value={row.day7} onChange={(event) => changeTimeSheetData('day7', index, Math.min(event.target.value, 16))} aria-label={`Day 7 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day1} onChange={(event) => changeTimeSheetData('day1', index, Math.min(event.target.value, 16))} aria-label={`Day 1 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day2} onChange={(event) => changeTimeSheetData('day2', index, Math.min(event.target.value, 16))} aria-label={`Day 2 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day3} onChange={(event) => changeTimeSheetData('day3', index, Math.min(event.target.value, 16))} aria-label={`Day 3 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day4} onChange={(event) => changeTimeSheetData('day4', index, Math.min(event.target.value, 16))} aria-label={`Day 4 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day5} onChange={(event) => changeTimeSheetData('day5', index, Math.min(event.target.value, 16))} aria-label={`Day 5 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day6} onChange={(event) => changeTimeSheetData('day6', index, Math.min(event.target.value, 16))} aria-label={`Day 6 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
+                                    <td className="col-md-1"><input type="text" disabled={enableInput(row) ? true : false} className="form-control text-center" value={row.day7} onChange={(event) => changeTimeSheetData('day7', index, Math.min(event.target.value, 16))} aria-label={`Day 7 for Row ${index + 1}`} role="textbox" tabIndex={0} /></td>
 
                                     {window.location.href.includes("employee") &&
                                         <td className="col-md-auto">
-                                            { !enableInput(row) ?<button class="btn" onClick={() => { deleteTableRow(index) }} aria-label={`Delete Row ${index + 1}`} role="button" tabIndex={0}>
+                                            {!enableInput(row) ? <button class="btn" onClick={() => { deleteTableRow(index) }} aria-label={`Delete Row ${index + 1}`} role="button" tabIndex={0}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
                                                     <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
-                                                </svg></button>:'-'}</td>}
+                                                </svg></button> : '-'}</td>}
 
                                     <td className="col-md-1" aria-label={`Total for Row ${index + 1}`} tabIndex={0}>{row.total}</td>
 
@@ -879,7 +887,15 @@ const TimeSheetEntry = (props) => {
                             {window.location.href.includes("employee") && <td className='col-md-1'></td>}
                             <td className='col-md-1' aria-label="Total for the week"><p>{day1Total + day2Total + day3Total + day4Total + day5Total + day6Total + day7Total}</p></td>
                         </tr>
-                        <td> {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input type="text" value={comments} onChange={handleCommentsChange} placeholder='comments' style={{ marginTop: '20px', width: '400%', height: '50px', border: '1px solid #D6EAF8' }} aria-label="Comments" tabIndex={0} />}</td>
+                        <td> {window.location.href.includes("manager") || (window.location.href.includes("details")) && <input type="text" value={comments} onChange={handleCommentsChange} placeholder='comments' style={{ marginTop: '20px', width: '400%', height: '50px', border: '1px solid #D6EAF8',borderColor: charCount > 250 ? 'red' : '1px solid #D6EAF8' }} aria-label="Comments" tabIndex={0} />}</td>
+                        {/* {window.location.href.includes("manager") || (window.location.href.includes("details")) &&<div>
+                         Character Count: {charCount} / 250
+                        </div>}
+                        {charCount > 250 && (
+                            <div style={{ color: 'red' }}>
+                                Please enter up to 250 characters only.
+                            </div>
+                         )} */}
                     </tbody>
                 </table>
 

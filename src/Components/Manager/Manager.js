@@ -23,17 +23,6 @@ var rows = [
 
 ];
 
-
-
-const trigger = (row, e) => {
-  rows.map(obj => {
-    if (obj.id === row.id) {
-      obj.Comments = e.target.value; return obj
-    }
-
-  });
-}
-
 const Manager = () => {
   localStorage.setItem("role", 'manager');
   const columns = [
@@ -84,7 +73,7 @@ const Manager = () => {
       renderCell: (params) => {
         return (
 
-          <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(params, e)} />
+          <input type="text" style={{ width: "100%" }} onChange={(e) => trigger(params, e)} />
 
         );
       }
@@ -103,6 +92,7 @@ const Manager = () => {
   const [rejectoast, setrejectoast] = React.useState(false);
   const [disableButtons, setdisableButtons] = React.useState(true);
   const [selectedDates, setselectedDates] = React.useState("");
+  
   // const [timeSheetRows,setTimeSheetRows] = React.useState([]);
   const [refresh, setRefresh] = useState(false);
   const [dateRanges, setDateRanges] = useState(DateRange);
@@ -286,6 +276,22 @@ const Manager = () => {
       })
 
   };
+
+  const trigger = (row, e) => {
+    console.log('trigger:',e.target.value,'length',e.target.value.length);
+    const Data=rowsData.map(obj => {
+      if (obj.id === row.id) {
+        if((e.target.value).length<=250){
+          obj.Comments = e.target.value; 
+          return obj
+        }
+        return obj
+      }
+      return obj;
+    });
+    setrowsData(Data);
+  }
+  
   return (
 
     <div className="overall-layout">
@@ -395,7 +401,8 @@ const Manager = () => {
                       <div className="container">
                         <div className="row justify-content-md-center">
                           <div className="col-md-12 input">
-                            <input type="text" style={{ width: "100%" }} onChange={(e, i) => trigger(row, e)} aria-label="Enter Comments" role="textbox" tabIndex={0} />
+                          <input type="text" style={{ width: "100%" }} onChange={(e) => trigger(row, e)} aria-label="Enter Comments" role="textbox" tabIndex={0} value={row.Comments}/>
+                            
                           </div>
                         </div>
                       </div>
