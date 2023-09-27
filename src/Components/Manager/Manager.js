@@ -171,8 +171,8 @@ const Manager = () => {
     axios.put("http://localhost:3001/timesheetActivity", data).then(response => {
       console.log('response:', response);
       setrejectoast(true);
-      // setTimeout(() => { setRefresh(true) }, 1000);
-      setTimeout(() => { navigate('/employee') }, 1000);
+      setTimeout(() => { setRefresh(true) }, 1000);
+      // setTimeout(() => { navigate('/employee') }, 1000);
     }).catch(err => {
       console.log('err:', err);
     })
@@ -277,20 +277,42 @@ const Manager = () => {
 
   };
 
+  // const trigger = (row, e) => {
+  //   console.log('trigger:',e.target.value,'length',e.target.value.length);
+  //   const Data=rowsData.map(obj => {
+  //     if (obj.id === row.id) {
+  //       if((e.target.value).length<=250){
+  //         obj.Comments = e.target.value; 
+  //         return obj
+  //       }
+  //       return obj
+  //     }
+  //     return obj;
+  //   });
+  //   setrowsData(Data);
+  
+  // }
   const trigger = (row, e) => {
-    console.log('trigger:',e.target.value,'length',e.target.value.length);
-    const Data=rowsData.map(obj => {
-      if (obj.id === row.id) {
-        if((e.target.value).length<=250){
-          obj.Comments = e.target.value; 
-          return obj
+    if (e.target.value.length <= 250) {
+      const updatedData = rowsData.map(obj => {
+        if (obj.id === row.id) {
+          obj.Comments = e.target.value;
         }
-        return obj
-      }
-      return obj;
-    });
-    setrowsData(Data);
-  }
+        return obj;
+      });
+      setrowsData(updatedData);
+    } else {
+      const truncatedValue = e.target.value.slice(0, 250);
+      const updatedData = rowsData.map(obj => {
+        if (obj.id === row.id) {
+          obj.Comments = truncatedValue;
+        }
+        return obj;
+      });
+      setrowsData(updatedData);
+    }
+  };
+  
   
   return (
 
